@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Flores Amarillas</title>
+  <link rel="icon" href="img/flowers.png" type="image/x-icon" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+  <!-- Fondo de estrellas + resplandor -->
+  <div class="back"></div>
+
+  <!-- Imagen principal (tu PNG) con balanceo -->
+  <img src="img/flowers.png" alt="Flores" class="flowers" />
+
+  <!-- Texto bonito con tracking amplio (similar a tu captura) -->
+  <div class="text">
+    <p class="l1">Estas flores amarillas son un reflejo de la alegría que traes a mi vida</p>
+    <p class="l2">Gracias por iluminar mis días con tu presencia.</p>
+  </div>
+
+  <!-- Reproductor de audio -->
+  <audio id="bgm" loop preload="auto" playsinline>
+    <!-- usa tu archivo real -->
+    <source src="sound/ChristianBasso&HaienQiu-Flowers.mp3" type="audio/mpeg" />
+  </audio>
+
+  <!-- Overlay si el navegador pidiera interacción para el audio -->
+  <div id="tap" class="tap hide">
+    <button id="play">Tocar para reproducir</button>
+  </div>
+
+  <script>
+    // Partículas “fireflies”
+    function firefly(){
+      const s = document.createElement('span');
+      s.className = 'spark';
+      s.style.left = Math.random()*100 + 'vw';
+      s.style.animationDuration = (6 + Math.random()*6) + 's';
+      document.body.appendChild(s);
+      setTimeout(()=> s.remove(), 14000);
+    }
+    setInterval(firefly, 260); firefly();
+
+    // Reproducir audio aprovechando el clic que te trajo desde index.html
+    const audio = document.getElementById('bgm');
+    const tap = document.getElementById('tap');
+    const playBtn = document.getElementById('play');
+
+    async function tryPlay(){
+      try{
+        audio.volume = 0.85;
+        await audio.play();
+      }catch(e){
+        tap.classList.remove('hide'); // si falla, pedimos un toque
+      }
+    }
+
+    // Si vienes del click del botón, hay permiso de usuario
+    if (sessionStorage.getItem('playAudio') === '1') {
+      tryPlay();
+      sessionStorage.removeItem('playAudio');
+    } else {
+      // fallback por si llegaron directo a esta URL
+      tap.classList.remove('hide');
+    }
+
+    playBtn.addEventListener('click', async ()=> {
+      tap.classList.add('hide');
+      tryPlay();
+    });
+  </script>
+</body>
+</html>
+

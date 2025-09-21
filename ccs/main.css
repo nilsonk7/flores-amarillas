@@ -1,0 +1,75 @@
+:root{
+  --bg:#0d1117;
+  --grid: rgba(120, 200, 220, .08);
+  --glow: rgba(255, 236, 115, .35);
+  --txt: #ffe94d; /* amarillo lindo */
+}
+
+*{ box-sizing:border-box; }
+html, body { height:100% }
+body{
+  margin:0; background: var(--bg);
+  overflow:hidden; color:#fff; font-family: "Inter","Poppins",system-ui,sans-serif;
+}
+
+/* Fondo con puntos + sutil parpadeo */
+.back{
+  position:fixed; inset:0;
+  background:
+    radial-gradient(2px 2px at 20% 30%, var(--grid) 0, transparent 60%),
+    radial-gradient(2.2px 2.2px at 70% 60%, var(--grid) 0, transparent 60%),
+    radial-gradient(1.8px 1.8px at 40% 80%, var(--grid) 0, transparent 60%),
+    radial-gradient(120% 60% at 50% 60%, rgba(0,0,0,.45), transparent 60%),
+    radial-gradient(120% 60% at 50% 20%, var(--glow), transparent 70%);
+  animation: dim 6s ease-in-out infinite alternate;
+}
+@keyframes dim{ from{ filter:brightness(1)} to{ filter:brightness(1.08)} }
+
+/* Imagen central con balanceo y “respiración” */
+.flowers{
+  position:fixed; bottom:5vh; left:50%; transform:translateX(-50%);
+  width:min(880px, 90vw); height:auto; user-select:none; pointer-events:none;
+  filter: drop-shadow(0 30px 60px rgba(0,0,0,.4));
+  animation: sway 7s ease-in-out infinite, breathe 5.5s ease-in-out infinite;
+}
+@keyframes sway{ 0%,100%{ transform:translateX(-50%) rotate(0deg)} 50%{ transform:translateX(-50%) rotate(1.8deg)} }
+@keyframes breathe{ 0%,100%{ filter: drop-shadow(0 30px 60px rgba(0,0,0,.40)) } 50%{ filter: drop-shadow(0 40px 70px rgba(0,0,0,.55)) } }
+
+/* Texto grande con tracking amplio (como tu ejemplo) */
+.text{
+  position:fixed; inset: 8vh 5vw auto 5vw; text-align:center;
+  font-weight:800; color: var(--txt);
+  text-shadow: 0 2px 14px rgba(0,0,0,.65), 0 0 22px rgba(255,235,120,.25);
+}
+.text p{
+  margin: 0 0 min(5vh, 40px);
+  letter-spacing: .35em; /* tracking amplio */
+  font-size: clamp(18px, 3.2vw, 42px);
+}
+.text .l2{ margin-top: min(8vh, 60px) }
+
+/* Partículas “luciernagas” */
+.spark{
+  position:fixed; bottom:-12px; width:8px; height:8px; border-radius:50%;
+  background: rgba(255, 230, 0, .95);
+  box-shadow: 0 0 10px rgba(255, 240, 120, .9), 0 0 20px rgba(255, 240, 120, .5);
+  animation: float 8s linear infinite;
+}
+@keyframes float{
+  from{ transform: translateY(0) translateX(0) scale(1); opacity:.95 }
+  to  { transform: translateY(-110vh) translateX(8vw) scale(.7); opacity:0 }
+}
+
+/* Overlay para pedir toque si el navegador bloquea autoplay */
+.tap{
+  position:fixed; inset:0; display:grid; place-items:center; background: rgba(0,0,0,.35);
+  backdrop-filter: blur(3px); z-index:10;
+}
+.tap.hide{ display:none }
+.tap button{
+  padding:12px 18px; border-radius:12px; border:1px solid rgba(255,255,255,.2);
+  background: linear-gradient(135deg, #ffd84d, #ffb300); color:#222; font-weight:900;
+  box-shadow: 0 10px 28px rgba(0,0,0,.25);
+  cursor:pointer;
+}
+.tap button:hover{ filter: brightness(1.08) }
