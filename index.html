@@ -54,7 +54,7 @@
   }
   p{
     margin:0; color:#353535; font-size:clamp(16px,2.1vw,22px); line-height:1.55;
-    white-space:pre-line; /* respeta \n */
+    white-space:pre-line; /* ← convierte \n en saltos de línea reales */
   }
   .type{ border-right:2px solid #333; white-space:pre-wrap; overflow:hidden; }
 
@@ -70,10 +70,9 @@
     filter: drop-shadow(0 14px 30px rgba(0,0,0,.25));
     animation:sway 6.5s ease-in-out infinite;
   }
-  /* Posiciones y tamaños (ajústalos si quieres) */
-  .florA{ width:45%; left:27%; top:8%;  z-index:2; animation-delay:.2s }   /* centro */
-  .florB{ width:36%; left:4%;  bottom:2%; transform:rotate(-6deg); z-index:3; animation-delay:.6s } /* izquierda */
-  .florC{ width:38%; right:2%; bottom:0;  transform:rotate(5deg);  z-index:1; animation-delay:1s }  /* derecha */
+  .florA{ width:45%; left:27%; top:8%;  z-index:2; animation-delay:.2s }
+  .florB{ width:36%; left:4%;  bottom:2%; transform:rotate(-6deg); z-index:3; animation-delay:.6s }
+  .florC{ width:38%; right:2%; bottom:0;  transform:rotate(5deg);  z-index:1; animation-delay:1s }
   @keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(2.5deg)}}
 
   /* Partículas doradas */
@@ -81,7 +80,7 @@
           background:rgba(255,223,0,.9); animation:float 7s linear infinite; }
   @keyframes float{from{transform:translateY(0) scale(1);opacity:1}to{transform:translateY(-110vh) scale(.6);opacity:0}}
 
-  /* Barra de enlace para compartir */
+  /* Barra de enlace para compartir (opcional) */
   .sharebar{
     position:fixed; bottom:12px; left:50%; transform:translateX(-50%);
     display:flex; gap:8px; align-items:center;
@@ -109,7 +108,7 @@
     </div>
   </div>
 
-  <!-- Reproductor (tu pista MP3) -->
+  <!-- Reproductor: tu MP3 -->
   <audio id="bgAudio" loop preload="auto" playsinline>
     <source src="audio/te_robare.mp3" type="audio/mpeg" />
   </audio>
@@ -123,14 +122,13 @@
   <!-- Escenario visual con tus imágenes -->
   <div class="stage">
     <div id="arreglo" class="arreglo">
-      <!-- Cambia cuál va al centro editando los src aquí -->
       <img class="florA" src="flor3.webp" alt="Flor central"/>
       <img class="florB" src="flor1.webp" alt="Flor izquierda"/>
       <img class="florC" src="flor2.webp" alt="Flor derecha"/>
     </div>
   </div>
 
-  <!-- Barra de enlace (usa el URL real cuando publiques) -->
+  <!-- Barra de enlace (se completa con tu URL real al publicar) -->
   <div class="sharebar">
     <a id="shareLink" href="#" target="_blank" rel="noopener noreferrer">htts/flores amaarillas</a>
     <button id="btnShare" class="sbtn">Compartir</button>
@@ -138,26 +136,36 @@
   </div>
 
 <script>
-  /* ===== Texto (21/09) ===== */
+  /* ===== Utilidades ===== */
   const msj = document.getElementById('msj');
-  function es21Sept(fecha=new Date()){ const d=fecha.getDate(), m=fecha.getMonth()+1; return d===21 && m===9; }
+  const cover = document.getElementById('cover');
+  const msgCard = document.getElementById('msgCard');
+  const arreglo = document.getElementById('arreglo');
+  const bg = document.getElementById('bgAudio');
+
+  function es21Sept(d=new Date()){ return d.getDate()===21 && (d.getMonth()+1)===9; }
+
   function escribir(texto, velocidad=26){
     msj.textContent = "";
     let i = 0;
     const step = () => { msj.textContent += texto.slice(i, i+2); i += 2; if(i < texto.length) setTimeout(step, velocidad); };
     setTimeout(step, 280);
   }
-  const texto21 = [
-    "💛 Feliz 21 de Septiembre, amor.",
-    "Hoy te regalo un ramo que no se marchita: flores amarillas eternas hechas con cariño.",
-    "Si algún día el mundo se apaga, tu sonrisa me vuelve a encender.",
-    "Perdona que hoy no haya un ramo físico; quise darte algo que puedas abrir siempre que me extrañes.",
-    "Promesa firmada: cuando nos veamos, llevo flores reales y un abrazo de larga duración. 🌼✨"
-  ].join("\\n\\n");
-  const textoNormal = [
-    "Flores amarillas para ti 🌼",
-    "Un detalle que no caduca: abre esta página cuando quieras un rayito de sol."
-  ].join("\\n\\n");
+
+  /* ===== Texto (con saltos reales, NO aparece \n) ===== */
+  const texto21 = `💛 Feliz 21 de Septiembre, amor.
+
+Hoy te regalo un ramo que no se marchita: flores amarillas eternas hechas con cariño.
+
+Si algún día el mundo se apaga, tu sonrisa me vuelve a encender.
+
+Perdona que hoy no haya un ramo físico; quise darte algo que puedas abrir siempre que me extrañes.
+
+Promesa firmada: cuando nos veamos, llevo flores reales y un abrazo de larga duración. 🌼✨`;
+
+  const textoNormal = `Flores amarillas para ti 🌼
+
+Un detalle que no caduca: abre esta página cuando quieras un rayito de sol.`;
 
   /* ===== Partículas ===== */
   function particula(){
@@ -170,47 +178,38 @@
   }
 
   /* ===== Inicio de experiencia ===== */
-  const cover = document.getElementById('cover');
-  const msgCard = document.getElementById('msgCard');
-  const arreglo = document.getElementById('arreglo');
-  const bg = document.getElementById('bgAudio');
-
   async function startExperience(){
-    cover.classList.add('hide');           // oculta portada
-    msgCard.classList.add('show');         // mensaje blur->foco
-    arreglo.classList.add('show');         // flores blur->foco
+    cover.classList.add('hide');
+    msgCard.classList.add('show');
+    arreglo.classList.add('show');
+
     escribir(es21Sept() ? texto21 : textoNormal);
-    try { bg.volume = 0.8; await bg.play(); } catch(e) { /* si falla, al menos sigue la experiencia */ }
+
+    // Reproducir tu audio MP3 al clic (cumple políticas de los navegadores)
+    try { bg.volume = 0.8; await bg.play(); } catch(e) {}
+
     particula(); setInterval(particula, 240);
   }
   document.getElementById('openGift').addEventListener('click', startExperience);
 
   /* ===== Barra de enlace ===== */
-  const shareA = document.getElementById('shareLink');
-  const btnShare = document.getElementById('btnShare');
-  const btnCopy  = document.getElementById('btnCopy');
-
-  // Cuando publiques, esto usará el URL real (GitHub Pages, Vercel, Netlify, etc.)
   const realURL = window.location.href;
+  const shareA = document.getElementById('shareLink');
   shareA.href = realURL;
 
-  btnShare.addEventListener('click', async ()=>{
+  document.getElementById('btnShare').addEventListener('click', async ()=>{
     if(navigator.share){
       try{ await navigator.share({ title:"Flores Amarillas 💛", text:"Abrí mi regalo 🌼", url: realURL }); }catch(e){}
     }else{
-      try{
-        await navigator.clipboard.writeText(realURL);
-        btnShare.textContent = "Link copiado ✅";
-        setTimeout(()=>btnShare.textContent="Compartir", 1500);
-      }catch(e){}
+      try{ await navigator.clipboard.writeText(realURL); }catch(e){}
     }
   });
 
-  btnCopy.addEventListener('click', async ()=>{
+  document.getElementById('btnCopy').addEventListener('click', async ()=>{
     try{
       await navigator.clipboard.writeText(realURL);
-      btnCopy.textContent = "Copiado ✅";
-      setTimeout(()=>btnCopy.textContent="Copiar link", 1500);
+      const b = document.getElementById('btnCopy'); b.textContent="Copiado ✅";
+      setTimeout(()=> b.textContent="Copiar link", 1500);
     }catch(e){}
   });
 </script>
